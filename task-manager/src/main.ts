@@ -1,6 +1,13 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
+import { provideStore } from '@ngrx/store';
+import { provideRouter } from '@angular/router';
+import { tasksReducer } from './app/features/tasks/store/tasks.reducer';
+import { routes } from './app/app.routes';
 import { App } from './app/app';
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+bootstrapApplication(App, {
+  providers: [
+    provideStore({ tasks: tasksReducer }),
+    provideRouter(routes)
+  ]
+}).catch(err => console.error(err));
