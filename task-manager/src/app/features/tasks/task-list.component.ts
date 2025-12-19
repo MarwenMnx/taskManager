@@ -15,189 +15,189 @@ import { v4 as uuidv4 } from 'uuid';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="task-page">
-      <div class="task-container">
-        <h2>🌱 Your Tasks</h2>
+      <h2>Your Tasks</h2>
 
-        <!-- Add Task Form -->
-        <form (ngSubmit)="addTask()" #taskForm="ngForm" class="task-form">
-          <input type="text" placeholder="Title" [(ngModel)]="newTask.title" name="title" required />
-          <input type="text" placeholder="Description" [(ngModel)]="newTask.description" name="description" />
-          <input type="number" placeholder="Priority (1-5)" [(ngModel)]="newTask.priority" name="priority" min="1" max="5" required />
-          <input type="date" [(ngModel)]="newTask.dueDate" name="dueDate" required />
-          <button type="submit" [disabled]="!taskForm.form.valid">Add Task</button>
-        </form>
+      <!-- Add Task Form -->
+      <form (ngSubmit)="addTask()" #taskForm="ngForm" class="task-form">
+        <input type="text" placeholder="Title" [(ngModel)]="newTask.title" name="title" required />
+        <input type="text" placeholder="Description" [(ngModel)]="newTask.description" name="description" />
+        <input type="number" placeholder="Priority (1-5)" [(ngModel)]="newTask.priority" name="priority" min="1" max="5" required />
+        <input type="date" [(ngModel)]="newTask.dueDate" name="dueDate" required />
+        <button type="submit" [disabled]="!taskForm.form.valid">Add Task</button>
+      </form>
 
-        <!-- Task List -->
-        <ul>
-          <li *ngFor="let task of tasks$ | async" class="task-item">
-            <div *ngIf="editingTaskId !== task.id">
-              <div class="task-info" [class.completed]="task.completed">
-                <span class="task-title">{{ task.title }}</span>
-                <span class="task-desc">{{ task.description }}</span>
-                <span class="task-meta">Priority: {{ task.priority }} | Due: {{ task.dueDate | date:'shortDate' }}</span>
-              </div>
-              <div class="task-actions">
-                <button (click)="startEdit(task)">✏️ Edit</button>
-                <button (click)="toggleTask(task.id)">✔️ Done</button>
-                <button (click)="deleteTask(task.id)">🗑️ Delete</button>
-              </div>
+      <!-- Task List -->
+      <ul>
+        <li *ngFor="let task of tasks$ | async" class="task-card">
+          <div *ngIf="editingTaskId !== task.id">
+            <div class="task-info" [class.completed]="task.completed">
+              <span class="task-title">{{ task.title }}</span>
+              <span class="task-desc">{{ task.description }}</span>
+              <span class="task-meta">Priority: {{ task.priority }} | Due: {{ task.dueDate | date:'shortDate' }}</span>
             </div>
+            <div class="task-buttons">
+              <button (click)="startEdit(task)">✏️ Edit</button>
+              <button (click)="toggleTask(task.id)">✔️ Complete</button>
+              <button (click)="deleteTask(task.id)">🗑️ Delete</button>
+            </div>
+          </div>
 
-            <div *ngIf="editingTaskId === task.id" class="edit-form">
-              <input type="text" [(ngModel)]="editTask.title" name="editTitle" required />
-              <input type="text" [(ngModel)]="editTask.description" name="editDescription" />
-              <input type="number" [(ngModel)]="editTask.priority" name="editPriority" min="1" max="5" required />
-              <input type="date" [(ngModel)]="editTask.dueDate" name="editDueDate" required />
+          <div *ngIf="editingTaskId === task.id" class="edit-task">
+            <input type="text" [(ngModel)]="editTask.title" name="editTitle" required />
+            <input type="text" [(ngModel)]="editTask.description" name="editDescription" />
+            <input type="number" [(ngModel)]="editTask.priority" name="editPriority" min="1" max="5" required />
+            <input type="date" [(ngModel)]="editTask.dueDate" name="editDueDate" required />
+            <div class="edit-buttons">
               <button (click)="saveEdit()">💾 Save</button>
               <button (click)="cancelEdit()">❌ Cancel</button>
             </div>
-          </li>
-        </ul>
-      </div>
+          </div>
+        </li>
+      </ul>
     </div>
   `,
   styles: [`
-    /* Full page background */
     .task-page {
-      min-height: 100vh;
-      width: 100%;
-      background-color: #dff6dd; /* light green background */
+      max-width: 700px;
+      margin: 30px auto;
       padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .task-container {
-      width: 60%;
-      max-width: 800px;
-      background: #e6f4ea; /* slightly darker green */
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      background-color: #e8f5e9; /* soft green background */
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     h2 {
+      text-align: center;
       color: #2e7d32;
       margin-bottom: 20px;
-      font-size: 2rem;
-      text-align: center;
     }
 
-    /* Add Task Form */
+    .task-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
     .task-form input {
-      width: calc(25% - 10px);
-      margin: 5px;
+      flex: 1 1 45%;
       padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #a8d5ba;
+      border-radius: 6px;
+      border: 1px solid #a5d6a7;
     }
 
     .task-form button {
-      padding: 10px 20px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      background-color: #4caf50;
+      flex: 1 1 100%;
+      padding: 10px;
+      background-color: #2e7d32;
       color: white;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
     }
 
-    .task-form button:hover {
-      background-color: #388e3c;
+    .task-form button:disabled {
+      background-color: #a5d6a7;
+      cursor: not-allowed;
     }
 
-    /* Task Items */
-    ul { list-style: none; padding: 0; }
-    .task-item {
-      background: #f0faf0;
-      margin-bottom: 15px;
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .task-card {
+      background-color: white;
+      border-radius: 8px;
       padding: 15px;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
 
-  .task-info {
-  display: flex;
-  flex-direction: column; /* stack items vertically */
-  gap: 6px; /* space between title, description, and meta */
-  padding: 5px 0;
-}
+    .task-info { display: flex; flex-direction: column; gap: 6px; }
 
-.task-title {
-  font-weight: bold;
-  font-size: 1.2rem;
-}
+    .task-title { font-weight: bold; font-size: 1.2rem; color: #1b5e20; }
+    .task-desc { font-size: 1rem; color: #555; }
+    .task-meta { font-size: 0.85rem; color: #388e3c; }
 
-.task-desc {
-  font-size: 0.95rem;
-  color: #555;
-  margin: 0; /* remove extra margin if any */
-}
-
-.task-meta {
-  font-size: 0.85rem;
-  color: #2e7d32;
-}
-
-
-    .task-actions {
+    .task-buttons {
+      display: flex;
+      gap: 10px;
       margin-top: 10px;
+    }
+
+    .task-buttons button {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .task-buttons button:nth-child(1) { background-color: #81c784; color: white; }
+    .task-buttons button:nth-child(2) { background-color: #4caf50; color: white; }
+    .task-buttons button:nth-child(3) { background-color: #e57373; color: white; }
+
+    .task-buttons button:hover { opacity: 0.85; }
+
+    .completed { text-decoration: line-through; color: gray; }
+
+    .edit-task input {
+      flex: 1 1 45%;
+      padding: 8px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      border: 1px solid #a5d6a7;
+    }
+
+    .edit-buttons {
       display: flex;
       gap: 10px;
     }
 
-    .task-actions button {
-      padding: 6px 12px;
+    .edit-buttons button {
+      flex: 1;
+      padding: 6px 10px;
       border-radius: 6px;
       border: none;
       cursor: pointer;
-      background-color: #4caf50;
-      color: white;
-      transition: background-color 0.3s;
+      font-weight: bold;
     }
 
-    .task-actions button:hover {
-      background-color: #388e3c;
-    }
-
-    /* Edit form */
-    .edit-form input {
-      margin: 5px;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #a8d5ba;
-    }
-
-    .edit-form button {
-      margin: 5px;
-      padding: 8px 16px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      background-color: #4caf50;
-      color: white;
-    }
-
-    .edit-form button:hover {
-      background-color: #388e3c;
-    }
+    .edit-buttons button:nth-child(1) { background-color: #4caf50; color: white; }
+    .edit-buttons button:nth-child(2) { background-color: #e57373; color: white; }
   `]
 })
 export class TaskListComponent {
   tasks$: Observable<Task[]>;
   newTask: Partial<Task> = { title: '', description: '', priority: 1, dueDate: '' };
 
-  // Edit task state
   editingTaskId: string | null = null;
   editTask: Partial<Task> = {};
 
   constructor(private store: Store, private auth: AuthService) {
+    const email = this.auth.currentEmail;
+    if (email) {
+      const savedTasks = localStorage.getItem(`tasks_${email}`);
+      if (savedTasks) {
+        const tasks: Task[] = JSON.parse(savedTasks);
+        this.store.dispatch(TaskActions.loadTasks({ tasks }));
+      }
+    }
+
     this.tasks$ = this.store.select(selectUserTasks(this.auth.currentEmail || ''));
+
+    this.store.select(selectUserTasks(this.auth.currentEmail || '')).subscribe(tasks => {
+      if (this.auth.currentEmail) {
+        localStorage.setItem(`tasks_${this.auth.currentEmail}`, JSON.stringify(tasks));
+      }
+    });
   }
 
-  // Add Task
   addTask() {
     if (!this.newTask.title || !this.newTask.dueDate) return;
     const task: Task = {
@@ -213,33 +213,14 @@ export class TaskListComponent {
     this.newTask = { title: '', description: '', priority: 1, dueDate: '' };
   }
 
-  // Delete Task
-  deleteTask(id: string) {
-    this.store.dispatch(TaskActions.deleteTask({ id }));
-  }
-
-  // Toggle complete
-  toggleTask(id: string) {
-    this.store.dispatch(TaskActions.toggleTask({ id }));
-  }
-
-  // Start editing
-  startEdit(task: Task) {
-    this.editingTaskId = task.id;
-    this.editTask = { ...task }; // clone task
-  }
-
-  // Save edit
+  deleteTask(id: string) { this.store.dispatch(TaskActions.deleteTask({ id })); }
+  toggleTask(id: string) { this.store.dispatch(TaskActions.toggleTask({ id })); }
+  startEdit(task: Task) { this.editingTaskId = task.id; this.editTask = { ...task }; }
   saveEdit() {
     if (this.editingTaskId && this.editTask.title && this.editTask.dueDate) {
       this.store.dispatch(TaskActions.updateTask({ task: this.editTask as Task }));
       this.cancelEdit();
     }
   }
-
-  // Cancel editing
-  cancelEdit() {
-    this.editingTaskId = null;
-    this.editTask = {};
-  }
+  cancelEdit() { this.editingTaskId = null; this.editTask = {}; }
 }
